@@ -27,6 +27,9 @@ public class GeminiService(IGeminiClient geminiClient)
         var res = await _geminiClient.ImagePrompt(message, bytes, ImageMimeType.Png);
         
         
-        return res.Candidates[0].Content.Parts[0].Text;
+        if(res != null)
+            return res.Candidates[0].Content.Parts[0].Text;
+        
+        return "";
     }
 }

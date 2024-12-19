@@ -6,6 +6,7 @@ using ImageRecognition.Entity;
 using ImageRecognition.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.OpenApi.Models;
 
 Env.Load();
 
@@ -33,12 +34,23 @@ builder.Services.AddDbContext<AppDbContext>(option =>
     
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
+builder.Services.AddSwaggerGen(sg =>
+{
+    sg.SwaggerDoc("v1", new OpenApiInfo { Title = "Measurement Recognition", Version = "v1" });
+
+});
+
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(sg =>
+    {
+        sg.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+        sg.RoutePrefix = "";
+    });
 }
 
 app.UseHttpsRedirection();
