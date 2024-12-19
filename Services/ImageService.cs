@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text.RegularExpressions;
 using ImageRecognition.Entity;
 using ImageRecognition.Models;
@@ -50,5 +51,12 @@ public class ImageService(GeminiService service, AppDbContext context)
         await _context.SaveChangesAsync();
 
         return img;
+    }
+
+    public async Task<ICollection<Image>> GetImagesAsync()
+    {
+        ICollection<Image> images = _context.Images.ToList();
+
+        return images;
     }
 }
