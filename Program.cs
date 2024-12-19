@@ -5,6 +5,7 @@ using ImageRecognition.Config;
 using ImageRecognition.Entity;
 using ImageRecognition.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 Env.Load();
 
@@ -22,13 +23,15 @@ builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<GeminiService>();
 
 builder.Services.AddGeminiClient(config =>
-        {
-            config.ApiKey = Settings.GeminiKey;
-        });
+    {
+        config.ApiKey = Settings.GeminiKey;
+        config.ImageBaseUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash"; 
+    });
 
 builder.Services.AddDbContext<AppDbContext>(option =>
     option.UseNpgsql(Settings.Connection));
-
+    
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var app = builder.Build();
 
@@ -39,10 +42,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-// using (var scope = app.Services.CreateScope())
-// {
-//     var geminiService = scope.ServiceProvider.GetRequiredService<GeminiService>();
-//     await geminiService.Example();
-// }
+
+app.UseStaticFiles(
+    new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Images")),
+        RequestPath = "/images"
+    });
 app.MapControllers();
 app.Run();
