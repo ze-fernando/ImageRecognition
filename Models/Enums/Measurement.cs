@@ -1,6 +1,6 @@
 namespace ImageRecognition.Models.Enums;
 
 public enum Measurement{
-    WATER,
+    ELECTRICITY,
     GAS,
 }
